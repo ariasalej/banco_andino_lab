@@ -1,0 +1,13 @@
+Actúa como PostgreSQL Database Architect y Senior DBA. 
+Basándote en el modelo lógico corregido del Banco Andino Colombia, genera el código SQL para los siguientes archivos iniciales:
+
+1. 00_extensions.sql (Extensión pgcrypto para UUID/hashing).
+2. 01_schemas.sql (Creación de esquemas organizados: core, security, audit).
+3. 02_catalogs.sql (Tablas de catálogos y estados acotados).
+4. 03_geography.sql (Estructura de departamentos, municipios y oficinas).
+5. 04_customers.sql (Estructura de clientes con restricciones de unicidad y tipo_persona).
+
+Asegúrate de incluir:
+- Convenciones snake_case y comentarios en objetos críticos.
+- Tipos de datos apropiados (VARCHAR acotados, TIMESTAMPTZ, NUMERIC para dinero).
+- Restricciones explícitas (PK, FK con ON DELETE RESTRICT, UNIQUE, CHECK y NOT NULL).

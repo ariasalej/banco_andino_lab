@@ -1,0 +1,14 @@
+Actúa como arquitecto de datos senior, DBA PostgreSQL y especialista en sistemas bancarios OLTP.
+Diseña el dominio de una entidad ficticia “Banco Andino Colombia”. NO generes todavía el SQL final.
+Incluye: departamentos/municipios/oficinas; clientes persona natural y jurídica; productos; cuentas; titularidad N:M; eventos de cuenta; transacciones; doble partida; usuarios/roles/permisos; auditoría.
+Condiciones:
+- cliente ≠ usuario interno;
+- eventos administrativos ≠ transacciones financieras;
+- una cuenta puede tener varios titulares;
+- toda transacción POSTED debe ser inmutable;
+- correcciones por reverso/compensación;
+- toda operación crítica debe poder auditarse;
+- volumen objetivo: 10K clientes, 50K cuentas, 1M transacciones.
+Entrega en este orden:
+1) actores y procesos; 2) entidades y propósito; 3) atributos esenciales; 4) relaciones/cardinalidades; 5) catálogos/estados; 6) mínimo 30 reglas de negocio verificables; 7) riesgos de consistencia; 8) decisiones que requieren validación humana; 9) ERD Mermaid.
+Finaliza con una autocrítica: qué está sobrediseñado, subdiseñado o ambiguo.

@@ -1,0 +1,4 @@
+Audita el modelo relacional propuesto para Banco Andino Colombia.
+Evalúa 1FN, 2FN y 3FN; PK, FK y N:M; nulabilidad; unicidad; tipos; catálogos; trazabilidad; histórico; riesgos de anomalías INSERT/UPDATE/DELETE.
+No rediseñes silenciosamente. Devuelve una tabla: hallazgo | severidad | evidencia | impacto | corrección propuesta.
+Después entrega el modelo lógico corregido, indicando cada cambio realizado.

@@ -1,0 +1,3 @@
+Analiza estos planes EXPLAIN (ANALYZE, BUFFERS). No recomiendes índices de forma automática.
+Para cada consulta identifica cuello de botella, causa probable, selectividad, columnas de join/filtro/orden, índice candidato si aplica, costo de escritura/almacenamiento del índice y riesgo de sobreindexación.
+Devuelve comparación before/after y clasifica la mejora como: no concluyente, menor, relevante o crítica. Señala cuando la mejor decisión sea NO crear índice.

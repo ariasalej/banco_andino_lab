@@ -1,25 +1,41 @@
--- ==========================================
--- Archivo: 08_transactions.sql
--- Propósito: Encabezado de transacciones financieras
--- ==========================================
+CREATE TABLE transacciones.transaccion (
+    id_transaccion BIGSERIAL PRIMARY KEY,
 
-CREATE TABLE core.transacciones (
-    transaccion_id INT GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
-    idempotency_key VARCHAR(64) NOT NULL UNIQUE,
-    cuenta_origen_id INT,
-    cuenta_destino_id INT,
-    tipo_transaccion VARCHAR(30) NOT NULL,
-    monto NUMERIC(15, 2) NOT NULL,
-    estado VARCHAR(20) NOT NULL DEFAULT 'POSTED',
-    descripcion VARCHAR(200),
-    created_at TIMESTAMPTZ NOT NULL DEFAULT CURRENT_TIMESTAMP,
-    
-    CONSTRAINT fk_tx_cuenta_origen FOREIGN KEY (cuenta_origen_id) REFERENCES core.cuentas(cuenta_id) ON DELETE RESTRICT,
-    CONSTRAINT fk_tx_cuenta_destino FOREIGN KEY (cuenta_destino_id) REFERENCES core.cuentas(cuenta_id) ON DELETE RESTRICT,
-    CONSTRAINT fk_tx_tipo FOREIGN KEY (tipo_transaccion) REFERENCES core.cat_tipos_transaccion(tipo) ON DELETE RESTRICT,
-    CONSTRAINT chk_tx_monto CHECK (monto > 0),
-    CONSTRAINT chk_tx_cuentas CHECK (cuenta_origen_id IS NOT NULL OR cuenta_destino_id IS NOT NULL),
-    CONSTRAINT chk_tx_origen_destino CHECK (cuenta_origen_id IS NULL OR cuenta_destino_id IS NULL OR cuenta_origen_id <> cuenta_destino_id)
+    id_tipo_transaccion INTEGER NOT NULL,
+
+    cuenta_origen BIGINT,
+    cuenta_destino BIGINT,
+
+    monto NUMERIC(18,2) NOT NULL,
+
+    id_estado_transaccion INTEGER NOT NULL,
+
+    fecha_transaccion TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+
+    descripcion VARCHAR(250),
+
+    id_usuario INTEGER,
+
+    CONSTRAINT fk_transaccion_tipo
+        FOREIGN KEY (id_tipo_transaccion)
+        REFERENCES catalogo.tipo_transaccion(id_tipo_transaccion),
+
+    CONSTRAINT fk_transaccion_estado
+        FOREIGN KEY (id_estado_transaccion)
+        REFERENCES catalogo.estado_transaccion(id_estado_transaccion),
+
+    CONSTRAINT fk_transaccion_origen
+        FOREIGN KEY (cuenta_origen)
+        REFERENCES cuentas.cuenta(id_cuenta),
+
+    CONSTRAINT fk_transaccion_destino
+        FOREIGN KEY (cuenta_destino)
+        REFERENCES cuentas.cuenta(id_cuenta),
+
+    CONSTRAINT fk_transaccion_usuario
+        FOREIGN KEY (id_usuario)
+        REFERENCES seguridad.usuario(id_usuario),
+
+    CONSTRAINT chk_monto_positivo
+        CHECK (monto > 0)
 );
-
-COMMENT ON TABLE core.transacciones IS 'Registro inmutable de transacciones financieras ejecutadas';

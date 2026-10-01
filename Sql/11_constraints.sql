@@ -1,9 +1,18 @@
--- ==========================================
--- Archivo: 11_constraints.sql
--- Propósito: Reglas avanzadas de integridad transaccional
--- ==========================================
+ALTER TABLE cuentas.cuenta
+ADD CONSTRAINT chk_fecha_cierre
+CHECK (
+    fecha_cierre IS NULL
+    OR fecha_cierre >= fecha_apertura
+);
 
--- Asegura que una cuenta con saldo disponible positivo no pueda cerrarse directamente
-ALTER TABLE core.cuentas
-    ADD CONSTRAINT chk_cierre_saldo_cero 
-    CHECK (estado <> 'CERRADA' OR (saldo_contable = 0 AND saldo_disponible = 0));
+ALTER TABLE transacciones.transaccion
+ADD CONSTRAINT chk_no_autotransferencia
+CHECK (
+    cuenta_origen IS NULL
+    OR cuenta_destino IS NULL
+    OR cuenta_origen <> cuenta_destino
+);
+
+ALTER TABLE clientes.cliente
+ADD CONSTRAINT chk_fecha_nacimiento
+CHECK (fecha_nacimiento <= CURRENT_DATE);

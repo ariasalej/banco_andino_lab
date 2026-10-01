@@ -1,30 +1,21 @@
--- ==========================================
--- Archivo: 14_functions.sql
--- Propósito: Funciones de negocio atómicas y verificaciones
--- ==========================================
-
--- Función para validar saldo disponible antes de débito
-CREATE OR REPLACE FUNCTION core.fn_validar_saldo_disponible(
-    p_cuenta_id INT,
-    p_monto NUMERIC
-) RETURNS BOOLEAN AS $$
+CREATE OR REPLACE FUNCTION cuentas.obtener_saldo(
+    p_id_cuenta BIGINT
+)
+RETURNS NUMERIC(18,2)
+LANGUAGE plpgsql
+AS $$
 DECLARE
-    v_saldo NUMERIC;
-    v_estado VARCHAR(20);
+    v_saldo NUMERIC(18,2);
 BEGIN
-    SELECT saldo_disponible, estado 
-    INTO v_saldo, v_estado 
-    FROM core.cuentas 
-    WHERE cuenta_id = p_cuenta_id;
+    SELECT saldo
+    INTO v_saldo
+    FROM cuentas.cuenta
+    WHERE id_cuenta = p_id_cuenta;
 
-    IF v_estado <> 'ACTIVA' THEN
-        RAISE EXCEPTION 'La cuenta % no está activa para transacciones (Estado: %).', p_cuenta_id, v_estado;
+    IF NOT FOUND THEN
+        RAISE EXCEPTION 'La cuenta no existe';
     END IF;
 
-    IF v_saldo < p_monto THEN
-        RETURN FALSE;
-    END IF;
-
-    RETURN TRUE;
+    RETURN v_saldo;
 END;
-$$ LANGUAGE plpgsql;
+$$;

@@ -1,18 +1,35 @@
--- ==========================================
--- Archivo: 12_indexes.sql
--- Propósito: Índices optimizados guiados por el workload OLTP
--- ==========================================
+CREATE INDEX idx_cliente_documento
+ON clientes.cliente(numero_documento);
 
--- Búsquedas frecuentes de clientes por documento
-CREATE INDEX idx_clientes_documento ON core.clientes(tipo_documento, numero_documento);
+-------------------------
 
--- Búsqueda de cuentas por cliente
-CREATE INDEX idx_titularidad_cliente ON core.titularidad(cliente_id);
+CREATE INDEX idx_cuenta_producto
+ON cuentas.cuenta(id_producto);
 
--- Consultas transaccionales por cuenta e inmutabilidad
-CREATE INDEX idx_transacciones_origen ON core.transacciones(cuenta_origen_id) WHERE cuenta_origen_id IS NOT NULL;
-CREATE INDEX idx_transacciones_destino ON core.transacciones(cuenta_destino_id) WHERE cuenta_destino_id IS NOT NULL;
-CREATE INDEX idx_ledger_cuenta_fecha ON core.ledger_movimientos(cuenta_id, created_at DESC);
+-------------------------
 
--- Índice GIN para búsquedas sobre logs de auditoría
-CREATE INDEX idx_audit_jsonb_nuevos ON audit.auditoria_logs USING gin (valores_nuevos);
+CREATE INDEX idx_cuenta_estado
+ON cuentas.cuenta(id_estado_cuenta);
+
+--------------------------
+
+CREATE INDEX idx_transaccion_fecha
+ON transacciones.transaccion(fecha_transaccion);
+
+---------------------------
+
+CREATE INDEX idx_transaccion_origen
+ON transacciones.transaccion(cuenta_origen);
+
+---------------------------
+
+CREATE INDEX idx_transaccion_destino
+ON transacciones.transaccion(cuenta_destino);
+
+----------------------------
+
+CREATE INDEX idx_movimiento_transaccion
+ON contabilidad.movimiento_contable(id_transaccion);
+
+CREATE INDEX idx_movimiento_cuenta
+ON contabilidad.movimiento_contable(id_cuenta);

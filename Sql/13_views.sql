@@ -1,31 +1,26 @@
--- ==========================================
--- Archivo: 13_views.sql
--- Propósito: Vistas de consulta y conciliación contable
--- ==========================================
-
-CREATE OR REPLACE VIEW core.v_resumen_cuentas AS
-SELECT 
-    c.cuenta_id,
+CREATE OR REPLACE VIEW cuentas.vw_cuentas_clientes AS
+SELECT
+    c.id_cuenta,
     c.numero_cuenta,
-    p.nombre_producto,
-    c.moneda,
-    c.saldo_contable,
-    c.saldo_disponible,
-    c.estado,
-    o.nombre AS oficina,
-    m.nombre AS municipio
-FROM core.cuentas c
-JOIN core.productos p ON c.producto_id = p.producto_id
-JOIN core.oficinas o ON c.oficina_id = o.oficina_id
-JOIN core.municipios m ON o.municipio_id = m.municipio_id;
+    cl.id_cliente,
+    cl.nombres,
+    cl.apellidos,
+    c.saldo
+FROM cuentas.cuenta c
+JOIN cuentas.cuenta_cliente cc
+    ON cc.id_cuenta = c.id_cuenta
+JOIN clientes.cliente cl
+    ON cl.id_cliente = cc.id_cliente;
 
--- Vista para auditar la doble partida (Débitos vs Créditos por transacción)
-CREATE OR REPLACE VIEW core.v_auditoria_doble_partida AS
-SELECT 
-    transaccion_id,
-    SUM(CASE WHEN tipo_movimiento = 'DEBITO' THEN monto ELSE 0 END) AS total_debito,
-    SUM(CASE WHEN tipo_movimiento = 'CREDITO' THEN monto ELSE 0 END) AS total_credito,
-    (SUM(CASE WHEN tipo_movimiento = 'DEBITO' THEN monto ELSE 0 END) - 
-     SUM(CASE WHEN tipo_movimiento = 'CREDITO' THEN monto ELSE 0 END)) AS diferencia
-FROM core.ledger_movimientos
-GROUP BY transaccion_id;
+CREATE OR REPLACE VIEW transacciones.vw_resumen_transacciones AS
+SELECT
+    t.id_transaccion,
+    t.fecha_transaccion,
+    t.monto,
+    tt.nombre AS tipo_transaccion,
+    et.nombre AS estado
+FROM transacciones.transaccion t
+JOIN catalogo.tipo_transaccion tt
+    ON tt.id_tipo_transaccion = t.id_tipo_transaccion
+JOIN catalogo.estado_transaccion et
+    ON et.id_estado_transaccion = t.id_estado_transaccion;

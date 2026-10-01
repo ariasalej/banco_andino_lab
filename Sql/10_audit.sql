@@ -1,20 +1,15 @@
--- ==========================================
--- Archivo: 10_audit.sql
--- Propósito: Tabla inmutable de pistas de auditoría
--- ==========================================
+CREATE TABLE auditoria.auditoria (
+    id_auditoria BIGSERIAL PRIMARY KEY,
 
-CREATE TABLE audit.auditoria_logs (
-    log_id BIGINT GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
-    usuario_responsable VARCHAR(50) NOT NULL DEFAULT CURRENT_USER,
-    tabla_afectada VARCHAR(50) NOT NULL,
-    operacion VARCHAR(10) NOT NULL,
-    registro_afectado_id INT,
-    valores_anteriores JSONB,
-    valores_nuevos JSONB,
-    client_ip VARCHAR(45),
-    created_at TIMESTAMPTZ NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    tabla_afectada VARCHAR(100) NOT NULL,
+    operacion VARCHAR(20) NOT NULL,
 
-    CONSTRAINT chk_audit_operacion CHECK (operacion IN ('INSERT', 'UPDATE', 'DELETE'))
+    id_registro BIGINT,
+
+    usuario VARCHAR(100),
+
+    fecha_evento TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+
+    datos_anteriores JSONB,
+    datos_nuevos JSONB
 );
-
-COMMENT ON TABLE audit.auditoria_logs IS 'Registro centralizado e inmutable de operaciones sobre tablas críticas';

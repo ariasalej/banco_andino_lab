@@ -1,51 +1,32 @@
--- ==========================================
--- Archivo: 04_customers.sql
--- Propósito: Maestro de clientes (Persona Natural y Jurídica)
--- ==========================================
+CREATE TABLE clientes.cliente (
+    id_cliente BIGSERIAL PRIMARY KEY,
 
-CREATE TABLE core.clientes (
-    cliente_id INT GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
-    tipo_persona VARCHAR(10) NOT NULL,
-    tipo_documento VARCHAR(10) NOT NULL,
-    numero_documento VARCHAR(20) NOT NULL,
-    primer_nombre VARCHAR(50),
-    segundo_nombre VARCHAR(50),
-    primer_apellido VARCHAR(50),
-    segundo_apellido VARCHAR(50),
-    razon_social VARCHAR(150),
-    email VARCHAR(100) NOT NULL UNIQUE,
-    telefono VARCHAR(20) NOT NULL,
-    direccion VARCHAR(150) NOT NULL,
-    municipio_id INT NOT NULL,
-    estado VARCHAR(20) NOT NULL DEFAULT 'PENDIENTE',
-    created_at TIMESTAMPTZ NOT NULL DEFAULT CURRENT_TIMESTAMP,
-    updated_at TIMESTAMPTZ NOT NULL DEFAULT CURRENT_TIMESTAMP,
-    
-    -- Restricción de unicidad compuesto por tipo y número de documento
-    CONSTRAINT uk_cliente_documento UNIQUE (tipo_documento, numero_documento),
-    
-    -- Restricción de integridad referencial con municipio
-    CONSTRAINT fk_cliente_municipio 
-        FOREIGN KEY (municipio_id) 
-        REFERENCES core.municipios(municipio_id) 
-        ON DELETE RESTRICT,
-        
-    -- Restricción de integridad referencial con catálogo de estados
-    CONSTRAINT fk_cliente_estado 
-        FOREIGN KEY (estado) 
-        REFERENCES core.cat_estados_cliente(estado) 
-        ON DELETE RESTRICT,
-        
-    -- Validaciones de dominio de negocio
-    CONSTRAINT chk_tipo_persona CHECK (tipo_persona IN ('NATURAL', 'JURIDICA')),
-    CONSTRAINT chk_tipo_documento CHECK (
-        tipo_documento IN ('CC', 'CE', 'NIT', 'PASAPORTE')
-    ),
-    CONSTRAINT chk_datos_persona CHECK (
-        (tipo_persona = 'NATURAL' AND primer_nombre IS NOT NULL AND primer_apellido IS NOT NULL AND razon_social IS NULL) OR
-        (tipo_persona = 'JURIDICA' AND razon_social IS NOT NULL AND primer_nombre IS NULL AND primer_apellido IS NULL)
-    )
+    id_tipo_documento INTEGER NOT NULL,
+    numero_documento VARCHAR(30) NOT NULL UNIQUE,
+
+    nombres VARCHAR(100) NOT NULL,
+    apellidos VARCHAR(100) NOT NULL,
+
+    fecha_nacimiento DATE,
+
+    id_ciudad INTEGER,
+
+    correo VARCHAR(150),
+    telefono VARCHAR(30),
+
+    id_estado_cliente INTEGER NOT NULL,
+
+    fecha_creacion TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+
+    CONSTRAINT fk_cliente_tipo_documento
+        FOREIGN KEY (id_tipo_documento)
+        REFERENCES catalogo.tipo_documento(id_tipo_documento),
+
+    CONSTRAINT fk_cliente_ciudad
+        FOREIGN KEY (id_ciudad)
+        REFERENCES geografia.ciudad(id_ciudad),
+
+    CONSTRAINT fk_cliente_estado
+        FOREIGN KEY (id_estado_cliente)
+        REFERENCES catalogo.estado_cliente(id_estado_cliente)
 );
-
-COMMENT ON TABLE core.clientes IS 'Maestro unificado de clientes (Persona Natural y Jurídica)';
-COMMENT ON CONSTRAINT chk_datos_persona ON core.clientes IS 'Garantiza consistencia entre los nombres de persona natural o razón social de jurídica';

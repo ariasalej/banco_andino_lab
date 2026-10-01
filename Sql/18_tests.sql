@@ -1,13 +1,45 @@
--- ==========================================
--- Archivo: 18_tests.sql
--- Propósito: Pruebas unitarias positivas y negativas (Quality Gate G3)
--- ==========================================
+"EXISTENCIA DE CLIENTES"
+SELECT COUNT(*)
+FROM clientes.cliente;
 
--- Prueba 1: Intentar modificar una transacción POSTED (Debe fallar por el trigger de inmutabilidad)
--- UPDATE core.transacciones SET monto = 999999 WHERE transaccion_id = 1;
+"EXISTENCIA DE CUENTAS"
+SELECT COUNT(*)
+FROM cuentas.cuenta;
 
--- Prueba 2: Intentar transferir dinero a la misma cuenta (Debe fallar)
--- CALL core.sp_realizar_transferencia('TEST-IDEMP-01', 1, 1, 50000);
+"CUENTAS CON SALGO NEGATIVO"
+SELECT *
+FROM cuentas.cuenta
+WHERE saldo < 0;
 
--- Prueba 3: Intentar transferir sin saldo suficiente (Debe fallar)
--- CALL core.sp_realizar_transferencia('TEST-IDEMP-02', 1, 2, 999999999);
+"AUTOTRANSFERENCIAS"
+SELECT *
+FROM transacciones.transaccion
+WHERE cuenta_origen = cuenta_destino;
+
+"PARTIDA DOBLE"
+SELECT
+    id_transaccion,
+    SUM(
+        CASE
+            WHEN tipo_movimiento = 'D' THEN monto
+            WHEN tipo_movimiento = 'C' THEN -monto
+        END
+    ) AS diferencia
+FROM contabilidad.movimiento_contable
+GROUP BY id_transaccion
+HAVING SUM(
+    CASE
+        WHEN tipo_movimiento = 'D' THEN monto
+        WHEN tipo_movimiento = 'C' THEN -monto
+    END
+) <> 0;
+
+"PRUEBA DE SALDO"
+SELECT *
+FROM cuentas.cuenta
+WHERE saldo < 0;
+
+"PRUEBA DE TRANSACCIONES MODIFICADAS"
+UPDATE transacciones.transaccion
+SET monto = 999999
+WHERE id_transaccion = 1;
